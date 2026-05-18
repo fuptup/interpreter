@@ -1,14 +1,23 @@
-# Visual Studio
+# Visual Studio local state
 .vs/
 *.user
 *.suo
 *.sqlite
 VSWorkspaceState.json
 
-# Build outputs
+# C# build output
 bin/
 obj/
-x64/
-x86/
+
+# C/C++ build output
 Debug/
 Release/
+x64/
+x86/
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.log
+*.tlog
+*.lastbuildstate

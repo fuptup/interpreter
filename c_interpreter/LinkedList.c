@@ -5,14 +5,14 @@
 #include <string.h>
 
 
-//create a new node of the correct size
-SLLNode* CreateNewNode(const char* str)
+
+SDLLNode* CreateNewNode(const char* str)
 {
-	SLLNode* pNode = malloc(sizeof(SLLNode));
+	SDLLNode* pNode = malloc(sizeof(SDLLNode));
 
 	if (pNode == NULL)
 	{
-		printf("<CreateNewNode> malloc FAILED!");
+		printf("\n<CreateNewNode> malloc FAILED!");
 		return NULL;
 	}
 
@@ -25,47 +25,129 @@ SLLNode* CreateNewNode(const char* str)
 
 	if (pNode->pData == NULL)
 	{
-		printf("<CreateNewNode> pNode->pData malloc FAILED!");
+		printf("\n<CreateNewNode> pNode->pData malloc FAILED!");
 		free(pNode);
 		return NULL;
 	}
 
 	strcpy_s(pNode->pData, stringLengthWithNullTerminator, str);
 
-	printf("<CreateNewNode> SUCCESS. str = %s. malloc = %llu bytes", str, sizeof(SLLNode) + stringLengthWithNullTerminator);
+	printf("\n<CreateNewNode> SUCCESS. str = %s. malloc = %zu bytes", str, sizeof(SDLLNode) + stringLengthWithNullTerminator);
 
 	return pNode;
 }
 
-SLLNode* AddToEnd(SLLNode* pNode, const char* str)
+
+SDLLNode* InsertAfter(SDLLNode* pNode, const char* str)
 {
 	if (pNode == NULL)
 	{
-		printf("<AddToEnd> pNode == NULL! Creating a new node only");
+		printf("\n<InsertAfter> pNode == NULL! Cannot insert a new node!");
 
-		return CreateNewNode(str);
+		return NULL;
 	}
-	else
+
+	SDLLNode* pNewNode = CreateNewNode(str);
+
+	if (pNewNode != NULL)
 	{
-		if (pNode->pNext != NULL)
-		{
-			printf("<AddToEnd> pNode->pNext != NULL. DON'T KNOW WHAT TO DO!!");
-		}
-
-		SLLNode* pNewNode = CreateNewNode(str);
-
-		pNode->pNext = pNewNode;
 		pNewNode->pPrev = pNode;
+		pNewNode->pNext = pNode->pNext;
+		pNode->pNext = pNewNode;
 
-		return pNewNode;
+		if (pNewNode->pNext != NULL)
+		{
+			pNewNode->pNext->pPrev = pNewNode;
+		}
 	}
 
+	return pNewNode;
+}
+
+void Remove(SDLLNode* pNode)
+{
+	if (pNode == NULL)
+	{
+		printf("\n<Remove> pNode == NULL!");
+		return;
+	}
+
+	//update neighboring pointers
+	if (pNode->pPrev == NULL && pNode->pNext != NULL) //root of the list that has a pointer to the next node
+	{
+		pNode->pNext->pPrev = NULL;
+	}
+	else if (pNode->pNext == NULL && pNode->pPrev != NULL) //end of the list
+	{
+		pNode->pPrev->pNext = NULL;
+	}
+	else if (pNode->pNext != NULL && pNode->pPrev != NULL)// in the middle
+	{
+		pNode->pPrev->pNext = pNode->pNext;
+		pNode->pNext->pPrev = pNode->pPrev;
+	}
+
+	free(pNode->pData);
+	free(pNode);
+}
+
+
+void ToString(SDLLNode* pNode)
+{
+	SDLLNode* node = FetchRoot(pNode);
+
+	while (node != NULL)
+	{
+		printf("\n%s <- %s -> %s", 
+			node->pPrev == NULL ? "-" : node->pPrev->pData, 
+			node->pData, 
+			node->pNext == NULL ? "-" : node->pNext->pData);
+
+		node = node->pNext;
+	}
+}
+
+SDLLNode* FetchRoot(SDLLNode* pNode)
+{
+	if (pNode == NULL)
+	{
+		printf("\n<FetchRoot> pNode == NULL!");
+		return NULL;
+	}
+
+	while (pNode->pPrev != NULL)
+	{
+		pNode = pNode->pPrev;
+	}
+
+	return pNode;
 }
 
 bool Test_LLCreation()
 {
-	SLLNode* pNode = CreateNewNode("HelloWorld");
+	SDLLNode* pNode = CreateNewNode("HelloWorld");
+	if (pNode == NULL) return false;
 	free(pNode->pData);
 	free(pNode);
+
+
+	SDLLNode* pRoot = CreateNewNode("root");
+	pNode = InsertAfter(pRoot, "one");
+	pNode = InsertAfter(pNode, "two");
+	pNode = InsertAfter(pNode, "three");
+
+	ToString(pNode);
+
+	pNode = NULL;
+	while (pRoot != NULL)
+	{
+		SDLLNode* pNext = pRoot->pNext;
+		Remove(pRoot);
+		pRoot = pNext;
+	}
+
+	ToString(pNode);
+
+
 	return true;
 }

@@ -2,17 +2,23 @@
 #include <stdbool.h>
 
 
-typedef struct SLLNode
+typedef struct SDLLNode
 {
-	struct SLLNode* pPrev;
-	struct SLLNode* pNext;
+	struct SDLLNode* pPrev;
+	struct SDLLNode* pNext;
 
 	char* pData;
 
-} SLLNode;
+} SDLLNode;
 
 
-SLLNode* CreateNewNode(const char* str);
-SLLNode* AddToEnd(SLLNode* pNode, const char* str);
+SDLLNode* CreateNewNode(const char* str);
+SDLLNode* InsertAfter(SDLLNode* pNode, const char* str);
+void Remove(SDLLNode* pNode);
+SDLLNode* Find(const char* str);
+void ToString(SDLLNode* pNode);
+SDLLNode* FetchRoot(SDLLNode* pNode);
+
+
 bool Test_LLCreation();
-
+bool Test_DoublyLinkedList_All(void);

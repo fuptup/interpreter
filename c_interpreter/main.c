@@ -8,7 +8,7 @@ void RunTests()
 
 int main(int argc, char* argv[])
 {
-    RunTests();
-    return 0;
+    return Test_DoublyLinkedList_All() ? 0 : 1;
+    //return 0;
 }
 
